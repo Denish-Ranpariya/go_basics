@@ -15,7 +15,7 @@ type course struct {
 
 func main() {
 	fmt.Println("Welcome to json")
-	// EncodeJson()
+	EncodeJson()
 	DecodeJson()
 }
 
