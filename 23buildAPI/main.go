@@ -39,6 +39,45 @@ func (c *Course) IsEmpty() bool {
 
 func main() {
 	fmt.Println("Building API in GO!")
+	r := mux.NewRouter()
+	//seeding of data
+
+	courses = append(courses, Course{
+		CourseId:    "1",
+		CourseName:  "ReactJS",
+		CoursePrice: 299,
+		Author: &Author{
+			Fullname: "Unknown Author",
+			Website:  "unknown.abc",
+		},
+	},
+		Course{
+			CourseId:    "2",
+			CourseName:  "NodeJS",
+			CoursePrice: 399,
+			Author: &Author{
+				Fullname: "Unknown Author",
+				Website:  "unknown.abc",
+			},
+		},
+		Course{
+			CourseId:    "3",
+			CourseName:  "MERN stack",
+			CoursePrice: 499,
+			Author: &Author{
+				Fullname: "Unknown Author",
+				Website:  "unknown.abc",
+			},
+		},
+	)
+	r.HandleFunc("/", serveHomeRoute).Methods("GET")
+	r.HandleFunc("/courses", getAllCourses).Methods("GET")
+	r.HandleFunc("/courses/{id}", getOneCourse).Methods("GET")
+	r.HandleFunc("/courses", createOneCourse).Methods("POST")
+	r.HandleFunc("/courses/{id}", updateOneCourse).Methods("PUT")
+	r.HandleFunc("/courses/{id}", deleteCourse).Methods("DELETE")
+
+	http.ListenAndServe("localhost:8080", r)
 
 }
 
@@ -54,7 +93,7 @@ func getAllCourses(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(courses)
 }
 
-func getCourseById(w http.ResponseWriter, r *http.Request) {
+func getOneCourse(w http.ResponseWriter, r *http.Request) {
 	fmt.Println("Get course by id")
 	w.Header().Set("Content-Type", "application/json")
 
@@ -95,6 +134,13 @@ func createOneCourse(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	for _, currentCourse := range courses {
+		if currentCourse.CourseName == course.CourseName {
+			json.NewEncoder(w).Encode("Course name already exists.")
+			return
+		}
+	}
+
 	//generate unique id which is in string
 	//append new course into courses
 
@@ -106,7 +152,7 @@ func createOneCourse(w http.ResponseWriter, r *http.Request) {
 	return
 }
 
-func updateOne(w http.ResponseWriter, r *http.Request) {
+func updateOneCourse(w http.ResponseWriter, r *http.Request) {
 	fmt.Println("Updating one course")
 	w.Header().Set("Content-Type", "application/json")
 
@@ -116,6 +162,13 @@ func updateOne(w http.ResponseWriter, r *http.Request) {
 	var course Course
 	json.NewDecoder(r.Body).Decode(&course)
 
+	for _, currentCourse := range courses {
+		if currentCourse.CourseName == course.CourseName {
+			json.NewEncoder(w).Encode("Course name already exists.")
+			return
+		}
+	}
+
 	var index int = -1
 
 	for i, c := range courses {
@@ -123,6 +176,7 @@ func updateOne(w http.ResponseWriter, r *http.Request) {
 			index = i
 		}
 	}
+
 	if index != -1 {
 		course.CourseId = params["id"]
 		courses[index] = course
