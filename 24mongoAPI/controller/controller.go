@@ -60,3 +60,26 @@ func updateOneMovie(movieId string, movie model.Netflix) {
 	}
 	fmt.Println(result.MatchedCount, " document updated successfully with given id.")
 }
+
+func deleteOneMovie(movieId string) {
+	id, _ := primitive.ObjectIDFromHex(movieId)
+	filter := bson.M{"_id": id}
+	result, err := collection.DeleteOne(context.Background(), filter)
+	if err != nil {
+		log.Fatal(err)
+	}
+	fmt.Println(result.DeletedCount, " document deleted successfully with given id.")
+}
+
+func deleteAllMovie() {
+	filter := bson.M{{}}
+	result, err := collection.DeleteMany(context.Background(), filter)
+	if err != nil {
+		log.Fatal(err)
+	}
+	fmt.Println(result.DeletedCount, " documents deleted successfully with given id.")
+}
+
+func getAllMovies() {
+
+}
