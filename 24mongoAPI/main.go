@@ -1,7 +1,13 @@
 package main
 
-import "fmt"
+import (
+	"log"
+	"net/http"
+
+	"github.com/Denish-Ranpariya/mongoapi/router"
+)
 
 func main() {
-	fmt.Println("Mongodb API")
+	r := router.Router()
+	log.Fatal(http.ListenAndServe("localhost:8080", r))
 }
